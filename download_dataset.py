@@ -12,7 +12,7 @@ def download_dataset():
     label_types = ["detections"]
     classes = ["Tin can", "Apple", "Pear"]
     FiftyoneDataset_dir = "D:\projects\TFG\yolov5\datasets\FiftyoneDataset"
-    max_samples = 100
+    max_samples = 10
 
     dataset = foz.load_zoo_dataset(
         name,
