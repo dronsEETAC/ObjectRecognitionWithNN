@@ -1,40 +1,61 @@
-# Import libraries
-import os
-import sys
-from pathlib import Path
+import cv2
+from time import time
+import pandas
+import torch
 
-# Import files
-import detect
-import train
-import dataset
-
-# Get yolov5 root directory
-FILE = Path(__file__).resolve()
-ROOT = FILE.parents[0]  # YOLOv5 root directory
-if str(ROOT) not in sys.path:
-    sys.path.append(str(ROOT))  # add ROOT to PATH
-ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
+from user import User
 
 
-# Downloading dataset function
-def downloading_dataset(classes_selected: list):
-    dataset.download_dataset(classes_selected)
+def capture(model):
+    cap = cv2.VideoCapture(0)
 
+    previous = time()
+    delta = 0
 
-# Training model with a dataset
-def training():
-    pass # TODO
+    while cap.isOpened():
+        current = time()
+        delta = current - previous
 
+        if delta > 2:
+            status, frame = cap.read()
 
-# Detection function
-def detection(weights_selected: str, classes_selected: list):
-    detect.run(
-        weights=ROOT / weights_selected, # weights_selected='yolov5s.pt'
-        source=ROOT / '0',
-        classes=classes_selected, # classes_selected=[0, 5] || 0: person | 5:bus (see coco128.yaml)
-    )
+            if not status:
+                break
+
+            # Inference
+            pred = model(frame)
+            # xmin,ymin,xmax,ymax
+            df = pred.pandas().xyxy[0]
+            # Filter by confidence
+            df = df[df["confidence"] > 0.5]
+
+            for i in range(df.shape[0]):
+                bbox = df.iloc[i][["xmin", "ymin", "xmax", "ymax"]].values.astype(int)
+
+                # print bboxes: frame -> (xmin, ymin), (xmax, ymax)
+                cv2.rectangle(frame, (bbox[0], bbox[1]), (bbox[2], bbox[3]), (255, 0, 0), 2)
+                # print text
+                cv2.putText(frame,
+                            f"{df.iloc[i]['name']}: {round(df.iloc[i]['confidence'], 4)}",
+                            (bbox[0], bbox[1] - 15),
+                            cv2.FONT_HERSHEY_PLAIN,
+                            1,
+                            (255, 255, 255),
+                            2)
+
+            cv2.imshow("frame", frame)
+
+            previous = current
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    cap.release()
 
 
 if __name__ == '__main__':
-    classes_selected = ["Tin can", "Apple", "Pear"]
-    downloading_dataset(classes_selected)
+    user = User()
+    user.weights_directory = 'runs/train/exp3/weights/best.pt'
+    # I think that the following loads the local model without needing Internet connection
+    myModel = torch.hub.load('.', 'custom', path='runs/train/exp3/weights/best.pt', source='local')
+    capture(myModel)
