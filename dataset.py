@@ -4,15 +4,28 @@ from fiftyone import ViewField as F
 
 import shutil
 
+import os
+import sys
+from pathlib import Path
 
-def download_dataset(classes_selected: list):
+
+def download_dataset(classes_selected: list, images_per_class):
+    # Define dataset directories
+    FiftyoneDataset_dir = 'datasets/FiftyoneDataset'  # "D:\projects\TFG\yolov5\datasets\FiftyoneDataset"
+    export_dir = 'datasets/YOLOv5Dataset'  # "D:\projects\TFG\yolov5\datasets\YOLOv5Dataset_1" || ROOT / 'datasets/YOLOv5Dataset_1'
+
+    # Delete already existing datasets with the same directory names if they exist
+    if os.path.exists(FiftyoneDataset_dir):
+        shutil.rmtree(FiftyoneDataset_dir)
+    if os.path.exists(export_dir):
+        shutil.rmtree(export_dir)
+
     # Load dataset in Fiftyone format
     name = "open-images-v7"
     splits = ["train", "validation"]
     label_types = ["detections"]
     classes = classes_selected  # classes_selected=["Tin can", "Apple", "Pear"]
-    FiftyoneDataset_dir = 'datasets/FiftyoneDataset'  # "D:\projects\TFG\yolov5\datasets\FiftyoneDataset"
-    max_samples = len(classes_selected)*10  # change to *200 or more after testing
+    max_samples = len(classes_selected)*images_per_class
 
     dataset = foz.load_zoo_dataset(
         name,
@@ -26,7 +39,6 @@ def download_dataset(classes_selected: list):
 
     # Export dataset in Fiftyone format to YOLOv5 format
     view = dataset.filter_labels("ground_truth", F("label").is_in(classes))
-    export_dir = 'datasets/YOLOv5Dataset_1'  # "D:\projects\TFG\yolov5\datasets\YOLOv5Dataset_1" || ROOT / 'datasets/YOLOv5Dataset_1'
     label_field = "ground_truth"
 
     for split in splits:
@@ -42,11 +54,11 @@ def download_dataset(classes_selected: list):
         )
 
     # Remove the dataset in Fiftyone format, we don't need it, we only need dataset in YOLOv5 format
-    shutil.rmtree(FiftyoneDataset_dir)
+    # shutil.rmtree(FiftyoneDataset_dir)
 
     return export_dir+'/dataset.yaml'
 
 
 if __name__ == '__main__':
-    classes_selected = ["Spoon", "Fork", "Kitchen knife"]
-    download_dataset(classes_selected)
+    classes_selected = ["Car", "Apple", "Dolphin"]
+    download_dataset(classes_selected, images_per_class=10)  # change to *200 or more after testing

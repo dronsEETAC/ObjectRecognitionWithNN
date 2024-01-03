@@ -3,8 +3,6 @@ from time import time
 import pandas
 import torch
 
-from user import User
-
 
 def capture(model):
     cap = cv2.VideoCapture(0)
@@ -54,8 +52,6 @@ def capture(model):
 
 
 if __name__ == '__main__':
-    user = User()
-    user.weights_directory = 'runs/train/exp3/weights/best.pt'
     # I think that the following loads the local model without needing Internet connection
     myModel = torch.hub.load('.', 'custom', path='runs/train/exp3/weights/best.pt', source='local')
     capture(myModel)
