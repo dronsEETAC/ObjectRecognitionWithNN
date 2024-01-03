@@ -37,7 +37,7 @@ class User:
         print("\nDataset downloaded!\n")
 
     # Training model with a dataset
-    def training(self, epochs=100, batch_size=16, imgsz=640, weights='yolov5s.pt'):
+    def training(self, epochs=50, batch_size=16, imgsz=640, weights='yolov5s.pt'):
         print("\nStarting training!\n")
 
         train.run(
@@ -70,7 +70,17 @@ class User:
 
 
 if __name__ == '__main__':
+    # Setting parameters
+    objects_selected = ["Car", "Jellyfish"]
+    images_per_object = 200
+    epochs = 50
+    batch_size = 16
+    image_size = 640
+    initial_weights = 'yolov5s.pt'
+
+
+    # Initiate the training
     user = User()
     user.initial_settings()
-    user.downloading_dataset(classes_selected=["Car", "Jellyfish"], images_per_class=20)
-    user.training(epochs=5)
+    user.downloading_dataset(classes_selected=objects_selected, images_per_class=images_per_object)
+    user.training(epochs=epochs, batch_size=batch_size, imgsz=image_size, weights=initial_weights)
