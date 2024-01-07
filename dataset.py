@@ -8,6 +8,8 @@ import os
 import sys
 from pathlib import Path
 
+import yaml
+
 
 def download_dataset(classes_selected: list, images_per_class):
     # Define dataset directories
@@ -56,9 +58,28 @@ def download_dataset(classes_selected: list, images_per_class):
     # Remove the dataset in Fiftyone format, we don't need it, we only need dataset in YOLOv5 format
     # shutil.rmtree(FiftyoneDataset_dir)
 
+    # Generate the dataset.yaml
+    generate_yaml(classes_selected, export_dir)
+
+    # Convert the dataset to a Zip folder
+    shutil.make_archive(export_dir, 'zip', 'datasets/', 'YOLOv5Dataset')
+
     return export_dir+'/dataset.yaml'
+
+def generate_yaml(classes_selected, dataset_dir):
+    with open(dataset_dir+'/dataset.yaml', 'w') as file:
+        file.write('names:\n')
+        for i, object in enumerate(classes_selected):
+            file.write(' '+str(i)+': '+str(object)+'\n')
+        file.write('path: ../YOLOv5Dataset\n')
+        file.write('train: ./images/train/\n')
+        file.write('val: ./images/val/\n')
 
 
 if __name__ == '__main__':
-    classes_selected = ["Car", "Apple", "Dolphin"]
-    download_dataset(classes_selected, images_per_class=10)  # change to *200 or more after testing
+    # Setting parameters
+    objects_selected = ["Tin can", "Pear"]
+    images_per_class = 200
+
+    # Downloading the dataset
+    download_dataset(classes_selected=objects_selected, images_per_class=images_per_class)
