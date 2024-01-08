@@ -2,9 +2,11 @@ import cv2
 from time import time
 import pandas
 import torch
+import hubconf
+import pathlib
 
 
-def capture(model):
+def cv2_capture(model, delta_min):
     cap = cv2.VideoCapture(0)
 
     previous = time()
@@ -14,7 +16,7 @@ def capture(model):
         current = time()
         delta = current - previous
 
-        if delta > 2:
+        if delta > delta_min:
             status, frame = cap.read()
 
             if not status:
@@ -52,6 +54,12 @@ def capture(model):
 
 
 if __name__ == '__main__':
-    # I think that the following loads the local model without needing Internet connection
-    myModel = torch.hub.load('.', 'custom', path='runs/train/exp3/weights/best.pt', source='local')
-    capture(myModel)
+    # Needed to solve "Error: cannot instantiate 'PosixPath' on your system" in Windows
+    temp = pathlib.PosixPath
+    pathlib.PosixPath = pathlib.WindowsPath
+
+    # Loading the model (pytorch-hub is not needed if yolov5 is cloned and with requirements intalled)
+    myModel = hubconf.custom(path='weights/best.pt')  # custom
+
+    # Initiate the inference
+    cv2_capture(model=myModel, delta_min=0)

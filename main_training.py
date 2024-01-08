@@ -7,7 +7,7 @@ import torch.cuda
 # Import files
 import detect
 import train
-import dataset
+import main_dataset
 
 
 class User:
@@ -32,7 +32,7 @@ class User:
     def downloading_dataset(self, classes_selected: list, images_per_class=200):
         print("\nStarting download!\n")
 
-        self.dataset_directory = dataset.download_dataset(classes_selected, images_per_class=images_per_class)
+        self.dataset_directory = main_dataset.download_dataset(classes_selected, images_per_class=images_per_class)
 
         print("\nDataset downloaded!\n")
 

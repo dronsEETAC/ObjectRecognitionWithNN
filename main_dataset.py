@@ -78,7 +78,7 @@ def generate_yaml(classes_selected, dataset_dir):
 
 if __name__ == '__main__':
     # Setting parameters
-    objects_selected = ["Tin can", "Pear"]
+    objects_selected = ["Pear", "Book"]
     images_per_class = 200
 
     # Downloading the dataset
