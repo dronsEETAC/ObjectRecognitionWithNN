@@ -7,7 +7,7 @@ import torch.cuda
 # Import files
 import detect
 import train
-import main_dataset
+from DEE_addition import main_dataset
 
 
 class User:

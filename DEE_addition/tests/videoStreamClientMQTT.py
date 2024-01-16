@@ -90,4 +90,4 @@ def start_mqtt(weights_path):
 
 
 if __name__ == '__main__':
-    start_mqtt(weights_path='weights/best.pt')
+    start_mqtt(weights_path='../weights/best.pt')
