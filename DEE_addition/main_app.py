@@ -18,6 +18,7 @@ detectionPlace = None
 showStream = False
 autopilotConnected = False
 takenOff = False
+connected = False
 
 
 # ROOT CONFIGURATION
@@ -30,21 +31,23 @@ root.iconbitmap('assets/drone.ico')
 
 
 # FUNCTIONS
-def EndConnections():
+def endConnections():
     try:
-        videoStream_client.unsubscribe("cameraService/VideoStreamClient/videoFrame")
-        videoStream_client.publish("VideoStreamClient/cameraService/stopVideoStream")
-        videoStream_client.loop_stop()
+        app_client.unsubscribe("cameraService/appClient/videoFrame")
+        app_client.publish("appClient/cameraService/stopVideoStream")
+        app_client.publish("appClient/cameraService/stopDetection")
+        app_client.loop_stop()
     except:
         pass
 
     try:
-        autopilot_client.publish("AutopilotClient/autopilotService/disconnect")
-        autopilot_client.loop_stop()
-
+        app_client.publish("appClient/autopilotService/disconnect")
     except:
         pass
 
+
+def endConnections_beforeClosing():
+    endConnections()
     root.destroy()
 
 
@@ -58,26 +61,27 @@ def stop_stream():
     showStream = False
 
 
-def load_model(weights_path):
+def load_model(object):
     # Needed to solve "Error: cannot instantiate 'PosixPath' on your system" in Windows
     temp = pathlib.PosixPath
     pathlib.PosixPath = pathlib.WindowsPath
 
+    model_path = f"weights/demonstrative-app/{object}.pt"
     # Loading the model (pytorch-hub is not needed if yolov5 is cloned and with requirements intalled)
-    myModel = hubconf.custom(path=weights_path)  # custom
+    model = hubconf.custom(path=model_path)  # custom
 
-    return myModel
+    return model
 
 
-def on_connect_videoStream(external_client, userdata, flags, rc):
+def on_connect(external_client, userdata, flags, rc):
     if rc == 0:
-        print("Camera - Connection OK")
+        print("Connection OK")
     else:
-        print("Camera - Bad connection")
+        print("Bad connection")
 
 
-def on_message_videoStream(client, userdata, message):
-    if message.topic == "cameraService/VideoStreamClient/videoFrame":
+def on_message(client, userdata, message):
+    if message.topic == "cameraService/appClient/videoFrame":
             img = base64.b64decode(message.payload)
             # converting into numpy array from buffer
             npimg = np.frombuffer(img, dtype=np.uint8)
@@ -103,12 +107,12 @@ def on_message_videoStream(client, userdata, message):
                 if df.iloc[i]['name'] == object and df.iloc[i]['confidence'] > 0.6:
                     print(f"{df.iloc[i]['name']} detected. Sending land order...")
                     # publish land order (autopilotService)
-                    autopilot_client.publish("AutopilotClient/autopilotService/land")
+                    client.publish("appClient/autopilotService/land")
                     # publish stopVideostream and unsubscribe from video frame (cameraService)
-                    videoStream_client.publish("VideoStreamClient/cameraService/stopVideoStream")
-                    videoStream_client.unsubscribe("cameraService/VideoStreamClient/videoFrame")
+                    client.publish("appClient/cameraService/stopVideoStream")
+                    client.unsubscribe("cameraService/appClient/videoFrame")
                     # stop the loop of videoStream_client
-                    videoStream_client.loop_stop()
+                    client.loop_stop()
 
 
                 # print bboxes: frame -> (xmin, ymin), (xmax, ymax)
@@ -130,86 +134,92 @@ def on_message_videoStream(client, userdata, message):
                 videoStream_label.configure(image=imgtk)
                 videoStream_label.imgtk = imgtk
 
+    if message.topic == "cameraService/appClient/objectDetected":
+        client.publish("appClient/cameraService/stopDetection")
+        client.publish("appClient/autopilotService/land")
+        client.loop_stop()
 
+    if message.topic == "cameraService/appClient/detectionVideoFrame":
+            img = base64.b64decode(message.payload)
+            # converting into numpy array from buffer
+            npimg = np.frombuffer(img, dtype=np.uint8)
+            # Decode to Original Frame
+            img = cv2.imdecode(npimg, 1)
+            # Resize image
+            img = cv2.resize(img, (640, 480))
+            # Convert to RGB
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-def on_connect_autopilot(external_client, userdata, flags, rc):
-    if rc == 0:
-        print("Autopilot - Connection OK")
-    else:
-        print("Autopilot - Bad connection")
+            if showStream == True:
+                # Show image (converted to a Tkinter compatible PhotoImage object) in videoStream_label
+                imgtk = ImageTk.PhotoImage(Image.fromarray(img))
+
+                videoStream_label.configure(image=imgtk)
+                videoStream_label.imgtk = imgtk
 
 
 def connect():
-    global videoStream_client
-    global autopilot_client
+    global object
+    global detectionPlace
+    global app_client
     global autopilotConnected
+    global connected
 
-    # Get the quality and period values
-    quality = quality_slider.get()
-    period = period_slider.get()
+    if connected is True:
+        endConnections()
+        connect_button.config(text="CONNECT", bg="lime green")
+        connected = False
 
-    # Just in case the Connect button is pressed more than once
-    try:
-        videoStream_client.unsubscribe("cameraService/VideoStreamClient/videoFrame")
-        videoStream_client.publish("VideoStreamClient/cameraService/stopVideoStream")
-        videoStream_client.loop_stop()
-    except:
-        pass
+    elif connected is False:
+        # Get the quality and period values
+        quality = quality_slider.get()
+        period = period_slider.get()
 
-    try:
-        autopilot_client.publish("AutopilotClient/autopilotService/disconnect")
-        autopilot_client.loop_stop()
-    except:
-        pass
+        try:
+            object = objects_dropdown.get()
+            detectionPlace = detectionPlaces_dropdown.get()
 
-    try:
-        global object
-        global detectionPlace
-        object = objects_dropdown.get()
-        detectionPlace = detectionPlaces_dropdown.get()
+            app_client = mqtt.Client("appClient", transport="websockets")
+            app_client.on_connect = on_connect
+            app_client.on_message = on_message
+            app_client.connect("broker.hivemq.com", 8000)
 
-        if detectionPlace == "On board":
-            pass
-        elif detectionPlace == "Ground station":
-            # Video stream client
-            videoStream_client = mqtt.Client("VideoStreamClient", transport="websockets")
-            videoStream_client.on_connect = on_connect_videoStream
-            videoStream_client.on_message = on_message_videoStream
-            videoStream_client.connect("broker.hivemq.com", 8000)
-
-            # Autopilot client
-            autopilot_client = mqtt.Client("AutopilotClient", transport="websockets")
-            autopilot_client.on_connect = on_connect_autopilot
-            # autopilot_client.on_message = on_message_autopilot
-            autopilot_client.connect("broker.hivemq.com", 8000)
-
-            # Load model depending on the selected object
-            if object == "Tin can":
-                weights_path = 'weights/demonstrative-app/tin-can.pt'
-            elif object == "Book":
-                weights_path = 'weights/demonstrative-app/book.pt'
-            model = load_model(weights_path)
-            videoStream_client.model = model
-
-            # Publish startVideoStream and subscribe to videoFrame (cameraService)
-            videoStream_client.publish(f"VideoStreamClient/cameraService/startVideoStream", f"{quality}/{period}")
-            videoStream_client.subscribe("cameraService/VideoStreamClient/videoFrame")
-            videoStream_client.loop_start()
+            time.sleep(5)  # give some time to connect before publishing (needed)
 
             # Publish connect order (autopilotService)
-            autopilot_client.publish("AutopilotClient/autopilotService/connect")
+            app_client.publish("appClient/autopilotService/connect")
             autopilotConnected = True
 
-    except:
-        messagebox.showerror("Error", "Please try again.")
+            if detectionPlace == "On board":
+                # Publish startDetection and subscribe to objectDetected (cameraService)
+                app_client.publish("appClient/cameraService/startDetection", f"{object}/{quality}/{period}")
+                app_client.subscribe("cameraService/appClient/objectDetected")
+                app_client.subscribe("cameraService/appClient/detectionVideoFrame")
+                app_client.loop_start()
+
+            elif detectionPlace == "Ground station":
+                # Load model depending on the selected object
+                model = load_model(object)
+                app_client.model = model
+
+                # Publish startVideoStream and subscribe to videoFrame (cameraService)
+                app_client.publish(f"appClient/cameraService/startVideoStream", f"{quality}/{period}")
+                app_client.subscribe("cameraService/appClient/videoFrame")
+                app_client.loop_start()
+
+            connected = True
+            connect_button.config(text="DISCONNECT", bg="indian red")
+
+        except:
+            messagebox.showerror("Error", "Please try again.")
 
 
 def arm_takeoff():
     global takenOff
     if autopilotConnected is True:
         # Publish armDrone & takeOff orders (autopilotService)
-        autopilot_client.publish("AutopilotClient/autopilotService/armDrone")
-        autopilot_client.publish("AutopilotClient/autopilotService/takeOff", "2")
+        app_client.publish("appClient/autopilotService/armDrone")
+        app_client.publish("appClient/autopilotService/takeOff", "2")
         takenOff = True
     else:
         messagebox.showerror("Error", "Please press CONNECT first.")
@@ -219,7 +229,7 @@ def flyNorth():
     if autopilotConnected is True:
         if takenOff is True:
             # Publish go North order (autopilotService)
-            autopilot_client.publish("AutopilotClient/autopilotService/go", "North")
+            app_client.publish("appClient/autopilotService/go", "North")
         else:
             messagebox.showerror("Error", "Please ARM & TAKE-OFF first.")
     else:
@@ -260,7 +270,7 @@ period_slider.set(0.2)
 period_slider.grid(row=7, column=0, sticky="WE", pady=(0, 10))
 
 # Connect button
-connect_button = tk.Button(root, text='CONNECT', font='sans 13 bold', command=connect)
+connect_button = tk.Button(root, text='CONNECT', bg="lime green", font='sans 13 bold', command=connect)
 connect_button.grid(row=8, column=0, sticky="WE", pady=(10, 10))
 
 # Drone operations label
@@ -268,11 +278,11 @@ droneOperations_label = tk.Label(root, text='Drone operations:', bg="dark orange
 droneOperations_label.grid(row=9, column=0, sticky="WE", padx=10, pady=(10, 10))
 
 # Arm & Take-off button
-arm_takeoff_button = tk.Button(root, text='ARM & TAKE-OFF', font='sans 13 bold', command=arm_takeoff)
+arm_takeoff_button = tk.Button(root, text='ARM & TAKE-OFF', bg="CadetBlue1", font='sans 13 bold', command=arm_takeoff)
 arm_takeoff_button.grid(row=10, column=0, sticky="WE", pady=(0, 10))
 
 # Fly North button
-flyNorth_button = tk.Button(root, text='FLY NORTH', font='sans 13 bold', command=flyNorth)
+flyNorth_button = tk.Button(root, text='FLY NORTH', bg="CadetBlue1", font='sans 13 bold', command=flyNorth)
 flyNorth_button.grid(row=11, column=0, sticky="WE", pady=(0, 10))
 
 # Video stream buttons
@@ -289,5 +299,5 @@ videoStream_label.grid(row=1, column=1, rowspan=1000, columnspan=2, padx=30)
 
 
 # RUN THE APP
-root.protocol("WM_DELETE_WINDOW", EndConnections) # Just in case the app is closed and the videoStream_client is still running
+root.protocol("WM_DELETE_WINDOW", endConnections_beforeClosing) # Just in case the app is closed and the videoStream_client is still running
 root.mainloop()
