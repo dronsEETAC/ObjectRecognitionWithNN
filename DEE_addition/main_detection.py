@@ -1,7 +1,5 @@
 import cv2
 from time import time
-import pandas
-import torch
 import hubconf
 import pathlib
 
@@ -59,7 +57,7 @@ if __name__ == '__main__':
     pathlib.PosixPath = pathlib.WindowsPath
 
     # Loading the model (pytorch-hub is not needed if yolov5 is cloned and with requirements intalled)
-    myModel = hubconf.custom(path='weights/demonstrative-app/book.pt')  # custom
+    myModel = hubconf.custom(path='weights/best.pt')  # custom
 
     # Initiate the inference
     cv2_capture(model=myModel, delta_min=0)

@@ -1,20 +1,14 @@
 import fiftyone as fo
 import fiftyone.zoo as foz
 from fiftyone import ViewField as F
-
 import shutil
-
 import os
-import sys
-from pathlib import Path
-
-import yaml
 
 
 def download_dataset(classes_selected: list, images_per_class):
     # Define dataset directories
-    FiftyoneDataset_dir = 'datasets/FiftyoneDataset'  # "D:\projects\TFG\yolov5\datasets\FiftyoneDataset"
-    export_dir = 'datasets/YOLOv5Dataset'  # "D:\projects\TFG\yolov5\datasets\YOLOv5Dataset_1" || ROOT / 'datasets/YOLOv5Dataset_1'
+    FiftyoneDataset_dir = 'datasets/FiftyoneDataset'
+    export_dir = 'datasets/YOLOv5Dataset'
 
     # Delete already existing datasets with the same directory names if they exist
     if os.path.exists(FiftyoneDataset_dir):
@@ -54,9 +48,6 @@ def download_dataset(classes_selected: list, images_per_class):
             split=split,
             classes=classes,
         )
-
-    # Remove the dataset in Fiftyone format, we don't need it, we only need dataset in YOLOv5 format
-    # shutil.rmtree(FiftyoneDataset_dir)
 
     # Generate the dataset.yaml
     generate_yaml(classes_selected, export_dir)
