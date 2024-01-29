@@ -4,7 +4,6 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 from PIL import ImageTk, Image
 import cv2
-import imutils
 import paho.mqtt.client as mqtt
 import base64
 import numpy as np
@@ -104,7 +103,7 @@ def on_message(client, userdata, message):
                 bbox = df.iloc[i][["xmin", "ymin", "xmax", "ymax"]].values.astype(int)
 
                 # Give land order if object is detected
-                if df.iloc[i]['name'] == object and df.iloc[i]['confidence'] > 0.6:
+                if df.iloc[i]['name'] == object and df.iloc[i]['confidence'] > 0.8:
                     print(f"{df.iloc[i]['name']} detected. Sending land order...")
                     # publish land order (autopilotService)
                     client.publish("appClient/autopilotService/land")
