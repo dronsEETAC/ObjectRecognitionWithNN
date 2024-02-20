@@ -9,6 +9,7 @@ En cuanto a la aplicación de carácter demostrativo, se han hecho dos vídeos, 
 3. Vídeo explicando el código de la aplicación:  [![DroneEngineeringEcosystem Badge](https://img.shields.io/badge/DEE-Desktop-code_app-pink.svg)](https://youtu.be/SGYTs5_liOM)
 
 
+[![DroneEngineeringEcosystem Badge](https://img.shields.io/badge/DEE-OnBoard-orange.svg)](https://github.com/dronsEETAC/DEE_OnBoard) Modules that run on board (shown in the red box of the figure).
 
 # Tutorial
 
