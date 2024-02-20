@@ -5,11 +5,11 @@ Dentro de la carpeta DEE_addition estan tanto los ficheros para descargar conjun
 En el siguiente apartado se define un Tutorial que explica como crear el entrono de trabajo, como descargar los conjuntos de datos, como realizar el entrenamiento y como realizar la detección.
 
 En cuanto a la aplicación de carácter demostrativo, se han hecho dos vídeos, uno donde se hace una demo de como funciona la aplicación y otro explicando el código. Los vídeos son los siguientes:
-1. Vídeo demo del funcionamiento de la aplicación: [![DroneEngineeringEcosystem Badge](https://img.shields.io/badge/DEE-Desktop-demo_app-pink.svg)](https://youtu.be/aim2eN5mdiw)
-3. Vídeo explicando el código de la aplicación:  [![DroneEngineeringEcosystem Badge](https://img.shields.io/badge/DEE-Desktop-code_app-pink.svg)](https://youtu.be/SGYTs5_liOM)
+1. Vídeo demo del funcionamiento de la aplicación: [![DroneEngineeringEcosystem Badge](https://img.shields.io/badge/DEE-demo_app-pink.svg)](https://youtu.be/aim2eN5mdiw)
+3. Vídeo explicando el código de la aplicación:  [![DroneEngineeringEcosystem Badge](https://img.shields.io/badge/DEE-code_app-pink.svg)](https://youtu.be/SGYTs5_liOM)
 
 
-[![DroneEngineeringEcosystem Badge](https://img.shields.io/badge/DEE-OnBoard-orange.svg)](https://github.com/dronsEETAC/DEE_OnBoard) Modules that run on board (shown in the red box of the figure).
+
 
 # Tutorial
 
