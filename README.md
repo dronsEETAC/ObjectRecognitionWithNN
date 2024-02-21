@@ -5,10 +5,10 @@ Dentro de la carpeta DEE_addition estan tanto los ficheros para descargar conjun
 En el siguiente apartado se define un Tutorial que explica como crear el entrono de trabajo, como descargar los conjuntos de datos, como realizar el entrenamiento y como realizar la detección.
 
 En cuanto a la aplicación de carácter demostrativo, se han hecho dos vídeos, uno donde se hace una demo de como funciona la aplicación y otro explicando el código. Los vídeos son los siguientes:
-1. Vídeo demo del funcionamiento de la aplicación: [![DroneEngineeringEcosystem Badge](https://img.shields.io/badge/DEE-demo_app-pink.svg)](https://youtu.be/aim2eN5mdiw)
-3. Vídeo explicando el código de la aplicación:  [![DroneEngineeringEcosystem Badge](https://img.shields.io/badge/DEE-code_app-pink.svg)](https://youtu.be/SGYTs5_liOM)
+1. Vídeo demo del funcionamiento de la aplicación: [![DroneEngineeringEcosystem Badge](https://img.shields.io/badge/DEE-demo_app-pink.svg)](https://www.youtube.com/watch?v=Y6EWHlZRF-g)
+2. Vídeo explicando el código de la aplicación:  [![DroneEngineeringEcosystem Badge](https://img.shields.io/badge/DEE-code_app-pink.svg)](https://www.youtube.com/watch?v=Svl8WfxM6Mw)
 
-
+Para poner en funcionamiento la aplicación se requiere poner también en marcha un CameraService adaptado, que permite tomar imagenes de la webcam del portátil pero tambien de la picamera de una Raspberry Pi, e incluso reconocer objetos en el propio servicio de cámara. El repositorio con este servicio de cámara adaptado es este:  [![DroneEngineeringEcosystem Badge](https://img.shields.io/badge/DEE-camera_service_for_object_recognition-blue.svg)](https://github.com/dronsEETAC/CameraServiceForObjectRecognition)
 
 
 # Tutorial
