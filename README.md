@@ -11,7 +11,9 @@ En cuanto a la aplicación de carácter demostrativo, se han hecho dos vídeos, 
 Para poner en funcionamiento la aplicación se requiere poner también en marcha un CameraService adaptado, que permite tomar imagenes de la webcam del portátil pero tambien de la picamera de una Raspberry Pi, e incluso reconocer objetos en el propio servicio de cámara. El repositorio con este servicio de cámara adaptado es este:  [![DroneEngineeringEcosystem Badge](https://img.shields.io/badge/DEE-camera_service_for_object_recognition-blue.svg)](https://github.com/dronsEETAC/CameraServiceForObjectRecognition)
 
 
-# Tutorial
+# Tutoriales
+## Introducción a la detección de objetos con redes neuronales y yolov5
+Este es: 2.  [![DroneEngineeringEcosystem Badge](https://img.shields.io/badge/DEE-introduccion-pink.svg)](https://www.youtube.com/playlist?list=PLyAtSQhMsD4qWd33j4rxHd13iO_GUXK4N)
 
 ## Crear entorno, clonar repositorio y instalar requerimientos
 
