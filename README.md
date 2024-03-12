@@ -13,7 +13,8 @@ Para poner en funcionamiento la aplicación se requiere poner también en marcha
 
 # Tutoriales
 ## Introducción a la detección de objetos con redes neuronales y yolov5
-Este es el video tutorial: [![DroneEngineeringEcosystem Badge](https://img.shields.io/badge/DEE-introduccion-pink.svg)](https://www.youtube.com/playlist?list=PLyAtSQhMsD4qWd33j4rxHd13iO_GUXK4N)
+Este es el video tutorial: [![DroneEngineeringEcosystem Badge](https://img.shields.io/badge/DEE-introduccion-pink.svg)](https://www.youtube.com/playlist?list=PLyAtSQhMsD4qWd33j4rxHd13iO_GUXK4N)     
+Este es el repositorio con el código que se usa en el video: [DroneEngineeringEcosystem Badge](https://img.shields.io/badge/DEE-tutorial_code-blue.svg)](https://github.com/dronsEETAC/TutorialRedesNeuronales.git)
 
 ## Crear entorno, clonar repositorio y instalar requerimientos
 
