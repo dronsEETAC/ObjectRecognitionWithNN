@@ -63,7 +63,7 @@ packaging==23.2
 paho-mqtt==1.6.1
 pandas==2.0.3
 pillow==10.2.0
-plotly==5.18.0
+plotly==5.22.0
 pprintpp==0.4.0
 priority==2.0.0
 psutil==5.9.7
