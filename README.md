@@ -16,6 +16,11 @@ Para poner en funcionamiento la aplicación se requiere poner también en marcha
 Este es el video tutorial: [![DroneEngineeringEcosystem Badge](https://img.shields.io/badge/DEE-introduccion-pink.svg)](https://www.youtube.com/playlist?list=PLyAtSQhMsD4qWd33j4rxHd13iO_GUXK4N)     
 Este es el repositorio con el código que se usa en el video: [![DroneEngineeringEcosystem Badge](https://img.shields.io/badge/DEE-tutorial_code-blue.svg)](https://github.com/dronsEETAC/TutorialRedesNeuronales.git)
 
+## Para empezar    
+Lo más fácil para empezar a experimentar con reconocimiento de objetos es probar el código del script llamado detectarObjetos.py que puede encontrarse en este repositorio. El programa usa una red neuronal preentrenada capaz de reconocer hasta 80 objetos diferentes. El programa establece qué objetos quiere reconocer (BANANA, PIZZA, DONUT, etc.) y usa la red neuronal para reconcer esos objetos en el stream de vídeo que captura de la cámara del ordenador en el que se ejecuta. Puede encontrarse más información sobre esa red preentrenada aqui:  
+https://docs.ultralytics.com/es/datasets/detect/coco/#applications
+
+
 ## Crear entorno, clonar repositorio y instalar requerimientos
 
 1. Crear un entorno virtual con Python 3.8. 
